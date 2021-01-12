@@ -47,42 +47,35 @@ export const registerUser = (req, res) => {
   });
 };
 
-export const loginUser = (req, res) => {
-  const { errors, isValid } = validateLogin(req.body);
+export const loginUser = async (req, res) => {
+  try {
+    const { errors, isValid } = validateLogin(req.body);
+    if (!isValid) {
+      return res.status(400).json(errors);
+    }
 
-  if (!isValid) {
-    return res.status(400).json(errors);
-  }
+    const email = req.body.email;
+    const pass = req.body.pass;
 
-  const email = req.body.email;
-  const pass = req.body.pass;
+    const user = await User.findOne({ email });
 
-  User.findOne({ email }).then((user) => {
     if (!user) {
       return res.status(404).json({ emailNotFound: "Email not found" });
     }
-  });
-
-  bcrypt.compare(pass, user.pass).then((isMatch) => {
-    if (isMatch) {
-      const payload = {
-        id: user.id,
-        name: user.name,
-      };
-
-      jwt.sign(
-        payload,
-        keys.secretOrKey,
-        { expiresIn: 31556926 },
-        (err, token) => {
-          res.json({
-            success: true,
-            token: "Bearer " + token,
-          });
-        }
-      );
-    } else {
-      return res.status(400).json({ passwordIncorrect: "Password Incorrect" });
+    const isMatch = await bcrypt.compare(pass, user.pass);
+    if (!isMatch) {
+      return res
+        .status(400)
+        .json({ passwordIncorrect: "Password is incorrect" });
     }
-  });
+
+    const payload = {
+      id: user._id,
+    };
+    const token = jwt.sign(payload, keys.secretOrKey);
+    return res.json({ token, user });
+  } catch (error) {
+    console.log(error);
+    return res.status(404).json({ someError: error.message });
+  }
 };
