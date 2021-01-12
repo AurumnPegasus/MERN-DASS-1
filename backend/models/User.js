@@ -14,7 +14,7 @@ const USER = new SCHEMA({
     type: String,
     required: true,
   },
-  password: {
+  pass: {
     type: String,
     required: true,
   },

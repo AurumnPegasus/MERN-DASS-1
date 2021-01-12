@@ -3,7 +3,7 @@ import isEmpty from "is-empty";
 
 export default (data) => {
   let errors = {};
-
+  console.log(data);
   // Empty fields to strings
   let name = !isEmpty(data.name) ? data.name : "";
   let email = !isEmpty(data.email) ? data.email : "";
@@ -17,7 +17,7 @@ export default (data) => {
 
   if (validator.isEmpty(email)) {
     errors.email = "Email field is required";
-  } else if (validator.isEmail(email)) {
+  } else if (!validator.isEmail(email)) {
     errors.email = "Invalid email";
   }
 

@@ -3,26 +3,27 @@ import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
+import passport from "passport";
+import bodyParser from "body-parser";
 
 // Importing different files
-import userRouts from "./routes/api/users.js";
+import userRoutes from "./routes/api/users.js";
+import passFile from "./config/passport.js";
 
 // Constants
 dotenv.config();
 const app = express();
 const keys = process.env;
 
-// Routes
-app.use("/users", userRouts);
-
 // Body Parser
 app.use(
-  express.urlencoded({
+  bodyParser.urlencoded({
     extended: false,
   })
 );
-app.use(express.json());
+app.use(bodyParser.json());
 app.use(cors());
+app.use("/users", userRoutes);
 
 // Database
 mongoose
@@ -30,8 +31,12 @@ mongoose
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
-  .then(() => console.log("MongoDB successfully connected"))
+  .then(() => console.log("MongoDB successfully connected one"))
   .catch((err) => console.log(err));
+
+// Passport middleware
+app.use(passport.initialize());
+passFile(passport);
 
 // PORT
 app.listen(keys.PORT, () =>
