@@ -14,6 +14,10 @@ const USER = new SCHEMA({
     type: String,
     required: true,
   },
+  isApplicant: {
+    type: Boolean,
+    required: true,
+  },
   pass: {
     type: String,
     required: true,

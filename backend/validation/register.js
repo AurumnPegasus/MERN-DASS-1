@@ -3,10 +3,11 @@ import isEmpty from "is-empty";
 
 export default (data) => {
   let errors = {};
-  console.log(data);
+  //  console.log(data);
   // Empty fields to strings
   let name = !isEmpty(data.name) ? data.name : "";
   let email = !isEmpty(data.email) ? data.email : "";
+  let isApplicant = data.isApplicant;
   let pass = !isEmpty(data.pass) ? data.pass : "";
   let conf_pass = !isEmpty(data.conf_pass) ? data.conf_pass : "";
 

@@ -13,10 +13,12 @@ dotenv.config();
 const keys = process.env;
 
 export const example = (req, res) => {
-  res.send("Hello");
+  return res.send("Hello");
 };
 
 export const registerUser = (req, res) => {
+  //  console.log("I am here");
+  //  console.log(req.body);
   const { errors, isValid } = validateRegister(req.body);
 
   if (!isValid) {
@@ -31,10 +33,10 @@ export const registerUser = (req, res) => {
     } else {
       const newUser = new User({
         name: req.body.name,
+        isApplicant: req.body.isApplicant,
         email: req.body.email,
         pass: req.body.pass,
       });
-      console.log(newUser);
       bcrypt.hash(newUser.pass, 10, (err, hash) => {
         if (err) throw err;
         newUser.pass = hash;
@@ -73,9 +75,8 @@ export const loginUser = async (req, res) => {
       id: user._id,
     };
     const token = jwt.sign(payload, keys.secretOrKey);
-    return res.json({ token, user });
+    return res.status(200).json({ token, user });
   } catch (error) {
-    console.log(error);
     return res.status(404).json({ someError: error.message });
   }
 };

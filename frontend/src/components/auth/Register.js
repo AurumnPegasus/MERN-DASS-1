@@ -1,10 +1,21 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
+import {
+  Button,
+  InputLabel,
+  MenuItem,
+  FormHelperText,
+  FormControl,
+  Select,
+  makeStyles,
+} from "@material-ui/core";
 
 const Register = () => {
-  console.log("At register");
+  //  console.log("At register");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [isApplicant, setIsApplicant] = useState(true);
   const [pass, setPass] = useState("");
   const [conf_pass, setConf_pass] = useState("");
   const [errors, setErrors] = useState({});
@@ -12,11 +23,38 @@ const Register = () => {
   const newUser = {
     name,
     email,
+    isApplicant,
     pass,
     conf_pass,
   };
 
-  console.log(newUser);
+  const formStyles = makeStyles((theme) => ({
+    formControl: {
+      margin: theme.spacing(1),
+      minWidth: 120,
+    },
+    selectEmpty: {
+      marginTop: theme.spacing(2),
+    },
+  }));
+
+  const dropDown = formStyles();
+
+  async function registerMe() {
+    //    console.log(newUser);
+    try {
+      let res = await axios.post("http://localhost:5000/users/register", {
+        name: newUser.name,
+        email: newUser.email,
+        isApplicant: newUser.isApplicant,
+        pass: newUser.pass,
+        conf_pass: newUser.conf_pass,
+      });
+      console.log(res.status);
+    } catch (err) {
+      console.log(err);
+    }
+  }
 
   return (
     <div className="container">
@@ -32,7 +70,7 @@ const Register = () => {
             </h4>
             <p className="grey-text text-darken-1">
               Already have an account?
-              <Link to="/login">Log in</Link>
+              <Link to="/login"> Log in</Link>
             </p>
           </div>
           <form noValidate onSubmit={(e) => e.preventDefault()}>
@@ -56,6 +94,20 @@ const Register = () => {
               />
               <label htmlFor="email">Email</label>
             </div>
+            <div className="is applicant">
+              <FormControl className={dropDown.formControl}>
+                <InputLabel id="demo-simple-select-label">Category</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  value={isApplicant}
+                  onChange={(e) => setIsApplicant(e.target.value)}
+                >
+                  <MenuItem value={true}>Applicant</MenuItem>
+                  <MenuItem value={false}>Recruiter</MenuItem>
+                </Select>
+              </FormControl>
+            </div>
             <div className="input-field col s12">
               <input
                 onChange={(e) => setPass(e.target.value)}
@@ -77,18 +129,15 @@ const Register = () => {
               <label htmlFor="conf_pass">Confirm Password</label>
             </div>
             <div className="col s12" style={{ paddingLeft: "11.25px" }}>
-              <button
-                style={{
-                  width: "150px",
-                  borderRadius: "3px",
-                  letterSpacing: "1.5px",
-                  marginTop: "1rem",
-                }}
+              <Button
+                variant="contained"
+                color="primary"
                 type="submit"
                 className="btn btn-large waves-effect waves-light hoverable blue accent-3"
+                onClick={() => registerMe()}
               >
                 Sign up
-              </button>
+              </Button>
             </div>
           </form>
         </div>

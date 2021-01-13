@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
+import { Button } from "@material-ui/core";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -10,12 +12,17 @@ const Login = () => {
     email,
     pass,
   };
-  //  console.log(userData);
-  const getMeData = (email, pass) => {
-    axios.post("http://localhost:5000/", { email, pass }).then((res) => {
-      console.log(res);
-    });
-  };
+  async function getMeData() {
+    try {
+      let res = await axios.post("http://localhost:5000/users/login", {
+        email: userData.email,
+        pass: userData.pass,
+      });
+      console.log(res.status);
+    } catch (err) {
+      console.log(err);
+    }
+  }
 
   return (
     <div className="container">
@@ -29,7 +36,7 @@ const Login = () => {
           </h4>
           <p className="grey-text text-darken-1">
             Don't have an account?
-            <Link to="/register">Register</Link>
+            <Link to="/register"> Register</Link>
           </p>
         </div>
         <form noValidate onSubmit={(e) => e.preventDefault()}>
@@ -54,19 +61,15 @@ const Login = () => {
             <label htmlFor="pass">Password</label>
           </div>
           <div className="col s12" style={{ paddingLeft: "11.25px" }}>
-            <button
-              style={{
-                width: "150px",
-                borderRadius: "3px",
-                letterSpacing: "1.5px",
-                marginTop: "1rem",
-              }}
+            <Button
+              variant="contained"
+              color="primary"
               type="submit"
               className="btn btn=large waves-effect waves-light hoverable blue accent-3"
-              onClick={(email, pass) => getMeData()}
+              onClick={() => getMeData()}
             >
               Login
-            </button>
+            </Button>
           </div>
         </form>
       </div>
