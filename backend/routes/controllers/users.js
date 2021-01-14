@@ -7,6 +7,7 @@ import dotenv from "dotenv";
 import validateRegister from "../../validation/register.js";
 import validateLogin from "../../validation/login.js";
 import User from "../../models/User.js";
+import images from "../../config/default.js";
 
 // Initialisation
 dotenv.config();
@@ -16,44 +17,48 @@ export const example = (req, res) => {
   return res.send("Hello");
 };
 
-export const registerUser = (req, res) => {
-  //  console.log("I am here");
-  //  console.log(req.body);
-  const { errors, isValid } = validateRegister(req.body);
-
-  if (!isValid) {
-    return res.status(400).json(errors);
-  }
-
-  User.findOne({ email: req.body.email }).then((user) => {
-    if (user) {
-      return res.status(400).json({
-        email: "Email already exists",
-      });
-    } else {
-      const newUser = new User({
-        name: req.body.name,
-        isApplicant: req.body.isApplicant,
-        email: req.body.email,
-        pass: req.body.pass,
-      });
-      bcrypt.hash(newUser.pass, 10, (err, hash) => {
-        if (err) throw err;
-        newUser.pass = hash;
-        newUser
-          .save()
-          .then((user) => res.send(user))
-          .catch((err) => console.log(err));
-      });
+export const registerUser = async (req, res) => {
+  try {
+    const { errors, isValid } = validateRegister(req.body);
+    if (!isValid) {
+      return res.status(201).json(errors);
     }
-  });
+    const name = req.body.name;
+    const email = req.body.email;
+    const pass = req.body.pass;
+    const profile = req.body.profile.length === 0 ? images : req.body.profile;
+    const isApplicant = req.body.isApplicant;
+
+    const user = await User.findOne({ email });
+    if (user) {
+      return res.status(201).json({ email: "Email is already registered" });
+    }
+    const newUser = new User({
+      name,
+      isApplicant,
+      email,
+      pass,
+      profile,
+    });
+
+    bcrypt.hash(newUser.pass, 10, (err, hash) => {
+      if (err) throw err;
+      newUser.pass = hash;
+      newUser
+        .save()
+        .then((user) => res.send(user))
+        .catch((err) => res.status(201).json({ someError: err.message }));
+    });
+  } catch (error) {
+    return res.status(201).json({ someError: error.message });
+  }
 };
 
 export const loginUser = async (req, res) => {
   try {
     const { errors, isValid } = validateLogin(req.body);
     if (!isValid) {
-      return res.status(400).json(errors);
+      return res.status(201).json(errors);
     }
 
     const email = req.body.email;
@@ -62,13 +67,11 @@ export const loginUser = async (req, res) => {
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(404).json({ emailNotFound: "Email not found" });
+      return res.status(201).json({ email: "Email not found" });
     }
     const isMatch = await bcrypt.compare(pass, user.pass);
     if (!isMatch) {
-      return res
-        .status(400)
-        .json({ passwordIncorrect: "Password is incorrect" });
+      return res.status(201).json({ pass: "Password is incorrect" });
     }
 
     const payload = {
@@ -77,6 +80,6 @@ export const loginUser = async (req, res) => {
     const token = jwt.sign(payload, keys.secretOrKey);
     return res.status(200).json({ token, user });
   } catch (error) {
-    return res.status(404).json({ someError: error.message });
+    return res.status(201).json({ someError: error.message });
   }
 };

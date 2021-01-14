@@ -22,10 +22,11 @@ const USER = new SCHEMA({
     type: String,
     required: true,
   },
-  date: {
-    type: Date,
-    default: Date.now,
+  profile: {
+    type: String,
+    required: true,
   },
 });
+
 const User = mongoose.model("users", USER);
 export default User;

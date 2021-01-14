@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import classnames from "classnames";
 import { Button } from "@material-ui/core";
 
 const Login = () => {
@@ -18,7 +19,18 @@ const Login = () => {
         email: userData.email,
         pass: userData.pass,
       });
-      console.log(res.status);
+      if (res.status === 200) {
+        setErrors({});
+        setEmail("");
+        setPass("");
+        localStorage.setItem(("token", res.token));
+      } else if (res.data.email) {
+        setErrors({ email: res.data.email });
+      } else if (res.data.pass) {
+        setErrors({ pass: res.data.pass });
+      } else {
+        setErrors({ someError: res.data.someError });
+      }
     } catch (err) {
       console.log(err);
     }
@@ -47,8 +59,12 @@ const Login = () => {
               error={errors.email}
               id="email"
               type="email"
+              className={classnames("", {
+                invalid: errors.email,
+              })}
             />
             <label htmlFor="email">Email</label>
+            <span className="red-text">{errors.email}</span>
           </div>
           <div className="input-field col s12">
             <input
@@ -57,15 +73,26 @@ const Login = () => {
               error={errors.pass}
               id="pass"
               type="password"
+              className={classnames("", {
+                invalid: errors.pass,
+              })}
             />
             <label htmlFor="pass">Password</label>
+            <span className="red-text">{errors.pass}</span>
+          </div>
+          <div
+            className={classnames("", {
+              invalid: errors.someError,
+            })}
+          >
+            <span className="red-text">{errors.someError}</span>
           </div>
           <div className="col s12" style={{ paddingLeft: "11.25px" }}>
             <Button
               variant="contained"
               color="primary"
               type="submit"
-              className="btn btn=large waves-effect waves-light hoverable blue accent-3"
+              className="btn btn-large waves-effect waves-light hoverable blue accent-3"
               onClick={() => getMeData()}
             >
               Login

@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import classnames from "classnames";
+import FileBase from "react-file-base64";
 import {
-  Button,
   InputLabel,
   MenuItem,
-  FormHelperText,
   FormControl,
   Select,
   makeStyles,
@@ -18,6 +18,7 @@ const Register = () => {
   const [isApplicant, setIsApplicant] = useState(true);
   const [pass, setPass] = useState("");
   const [conf_pass, setConf_pass] = useState("");
+  const [profile, setProfile] = useState("");
   const [errors, setErrors] = useState({});
 
   const newUser = {
@@ -26,6 +27,7 @@ const Register = () => {
     isApplicant,
     pass,
     conf_pass,
+    profile,
   };
 
   const formStyles = makeStyles((theme) => ({
@@ -49,8 +51,29 @@ const Register = () => {
         isApplicant: newUser.isApplicant,
         pass: newUser.pass,
         conf_pass: newUser.conf_pass,
+        profile: newUser.profile,
       });
-      console.log(res.status);
+      if (res.status === 200) {
+        setName("");
+        setEmail("");
+        setIsApplicant(true);
+        setPass("");
+        setConf_pass("");
+        setProfile("");
+        setErrors("");
+      } else if (res.data.name) {
+        setErrors({ name: res.data.name });
+      } else if (res.data.email) {
+        setErrors({ email: res.data.email });
+      } else if (res.data.pass) {
+        setErrors({ pass: res.data.pass });
+      } else if (res.data.conf_pass) {
+        setErrors({ conf_pass: res.data.conf_pass });
+      } else if (res.data.profile) {
+        setErrors({ profile: res.data.profile });
+      } else {
+        setErrors({ someError: res.data.someError });
+      }
     } catch (err) {
       console.log(err);
     }
@@ -66,7 +89,7 @@ const Register = () => {
           </Link>
           <div className="col s12" style={{ paddingLeft: "11.25px" }}>
             <h4>
-              <b>Register</b>below
+              <b>Register</b> below
             </h4>
             <p className="grey-text text-darken-1">
               Already have an account?
@@ -81,8 +104,10 @@ const Register = () => {
                 value={name}
                 error={errors.name}
                 onChange={(e) => setName(e.target.value)}
+                className={classnames("", { invalid: errors.name })}
               />
               <label htmlFor="name">Name</label>
+              <span className="red-text">{errors.name}</span>
             </div>
             <div className="input-field col s12">
               <input
@@ -91,8 +116,10 @@ const Register = () => {
                 error={errors.email}
                 id="email"
                 type="email"
+                className={classnames("", { invalid: errors.email })}
               />
               <label htmlFor="email">Email</label>
+              <span className="red-text">{errors.email}</span>
             </div>
             <div className="is applicant">
               <FormControl className={dropDown.formControl}>
@@ -115,8 +142,10 @@ const Register = () => {
                 error={errors.pass}
                 id="pass"
                 type="password"
+                className={classnames("", { invalid: errors.pass })}
               />
               <label htmlFor="pass">Password</label>
+              <span className="red-text">{errors.pass}</span>
             </div>
             <div className="input-field col s12">
               <input
@@ -125,19 +154,39 @@ const Register = () => {
                 error={errors.conf_pass}
                 id="conf_pass"
                 type="password"
+                className={classnames("", { invalid: errors.conf_pass })}
               />
               <label htmlFor="conf_pass">Confirm Password</label>
+              <span className="red-text">{errors.conf_pass}</span>
             </div>
-            <div className="col s12" style={{ paddingLeft: "11.25px" }}>
-              <Button
+            <div className={classnames("", { invalid: errors.someError })}>
+              <span className="red-text">{errors.someError}</span>
+            </div>
+            <div
+              className="waves-effect waves-light btn hoverable blue accent3"
+              style={{ paddingLeft: "11.25px" }}
+            >
+              <FileBase
+                type="file"
+                multiple={false}
+                onDone={(file) => setProfile(file.base64)}
+              ></FileBase>
+              <label htmlFor="profile" className="white-text">
+                Profile Image
+              </label>
+            </div>
+            <div className="col s12" style={{ marginTop: "10px" }}>
+              <button
                 variant="contained"
                 color="primary"
                 type="submit"
-                className="btn btn-large waves-effect waves-light hoverable blue accent-3"
+                name="action"
+                className="btn waves-effect waves-light hoverable blue accent3"
                 onClick={() => registerMe()}
               >
+                <i class="material-icons right">send</i>
                 Sign up
-              </Button>
+              </button>
             </div>
           </form>
         </div>
