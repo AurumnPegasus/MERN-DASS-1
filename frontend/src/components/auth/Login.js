@@ -1,18 +1,28 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useContext } from "react";
+import { Link, Redirect } from "react-router-dom";
 import axios from "axios";
 import classnames from "classnames";
 import { Button } from "@material-ui/core";
+import Context from '../../Context.js'
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [pass, setPass] = useState("");
   const [errors, setErrors] = useState("");
+  const [redir, setRedir] = useState(false);
+  const { setStore } = useContext(Context)
 
   const userData = {
     email,
     pass,
   };
+
+  const redirectHandler= () => {
+    if (redir) {
+      return <Redirect to='/profile'></Redirect>
+    }
+  }
+
   async function getMeData() {
     try {
       let res = await axios.post("http://localhost:5000/users/login", {
@@ -23,7 +33,13 @@ const Login = () => {
         setErrors({});
         setEmail("");
         setPass("");
-        localStorage.setItem(("token", res.token));
+        localStorage.setItem("token", res.data.token);
+        setStore({
+          token: res.data.token,
+          user: res.data.user
+        })
+        setRedir(true)
+        console.log('Success')
       } else if (res.data.email) {
         setErrors({ email: res.data.email });
       } else if (res.data.pass) {
@@ -99,6 +115,7 @@ const Login = () => {
             </Button>
           </div>
         </form>
+        {redirectHandler()}
       </div>
     </div>
   );

@@ -1,12 +1,13 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useContext } from "react";
 import Navbar from "./Navbar";
+import Context from '../../Context.js'
 
 const Profile = () => {
+  const { store } = useContext(Context)
   return (
     <div>
       <Navbar />
-      <p>Hello World</p>
+      <p>{store.user.name}</p>
     </div>
   );
 };
