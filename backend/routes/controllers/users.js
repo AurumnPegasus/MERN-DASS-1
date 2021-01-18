@@ -83,3 +83,15 @@ export const loginUser = async (req, res) => {
     return res.status(201).json({ someError: error.message });
   }
 };
+
+export const profileUser = async(req, res) => {
+  try {
+    const token = req.body.token
+    const info = jwt.verify(token, keys.secretOrKey)
+    const user = await User.findOne({_id: info.id})
+    return res.status(200).json({ user })
+  } catch(err) {
+    console.log(err.message)
+    return res.status(201).json({ someError: err.message })
+  }
+}

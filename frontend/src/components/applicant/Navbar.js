@@ -20,7 +20,7 @@ const Navbar = () => {
             </li>
             <li className="tab">
               <BrowserRouter>
-                <Link to="/">Three</Link>
+                <Link to="/profile">My Profile</Link>
               </BrowserRouter>
             </li>
           </ul>

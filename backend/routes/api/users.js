@@ -2,7 +2,7 @@
 import express from "express";
 
 // Importing files
-import { registerUser, loginUser } from "../controllers/users.js";
+import { registerUser, loginUser, profileUser } from "../controllers/users.js";
 
 // Constants
 const router = express.Router();
@@ -15,8 +15,6 @@ router.post("/register", registerUser);
 // @route POST users/login
 router.post("/login", loginUser);
 
-router.post("/example", (req, res) => {
-  res.send("Hello");
-});
+router.post('/profile', profileUser)
 
 export default router;
