@@ -4,7 +4,6 @@ import isEmpty from "is-empty";
 
 export default (data) => {
   let errors = {};
-  console.log(data.email);
   let email = !isEmpty(data.email) ? data.email : "";
   let pass = !isEmpty(data.pass) ? data.pass : "";
 

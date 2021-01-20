@@ -26,6 +26,14 @@ const USER = new SCHEMA({
     type: String,
     required: true,
   },
+  education: [{
+    name: String,
+    join: String,
+    leave: String
+  }],
+  skills: [{
+    name: String
+  }]
 });
 
 const User = mongoose.model("users", USER);

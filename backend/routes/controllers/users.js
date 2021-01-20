@@ -55,6 +55,7 @@ export const registerUser = async (req, res) => {
 };
 
 export const loginUser = async (req, res) => {
+  // console.log('idk how I got her')
   try {
     const { errors, isValid } = validateLogin(req.body);
     if (!isValid) {
@@ -93,5 +94,40 @@ export const profileUser = async(req, res) => {
   } catch(err) {
     console.log(err.message)
     return res.status(201).json({ someError: err.message })
+  }
+}
+
+export const editprofileUser = async(req, res) => {
+  try {
+    const name = req.body.name
+    const email = req.body.email
+    const pass = req.body.pass
+    const isApplicant = req.body.isApplicant
+    const profile = req.body.profile.length === 0 ? images : req.body.profile;
+    let education = req.body.education
+    const skills = req.body.skills
+    for(let edu of education){
+      if (!(!isNaN(edu.join) && edu.join.length===4)){
+        edu.join = ''
+      }
+      if(edu.leave.length === 0){
+        edu.leave = 'Ongoing'
+      } else if(!(!isNaN(edu.leave) && edu.leave.length===4)){
+        edu.leave = ''
+      }
+    }
+    const user = await User.updateOne({ email: email }, {
+      name,
+      email,
+      pass,
+      isApplicant,
+      profile,
+      education,
+      skills
+    })
+    res.status(200)
+  } catch (err) {
+    console.log(err)
+    res.status(201).json({ someError: err })
   }
 }
