@@ -116,7 +116,18 @@ export const editprofileUser = async(req, res) => {
         edu.leave = ''
       }
     }
-    const user = await User.updateOne({ email: email }, {
+
+    const user = {
+      name,
+      email,
+      pass,
+      isApplicant,
+      profile,
+      education,
+      skills
+    }
+
+    const updateRes = await User.updateOne({ email: email }, {
       name,
       email,
       pass,
@@ -125,9 +136,53 @@ export const editprofileUser = async(req, res) => {
       education,
       skills
     })
-    res.status(200)
+    console.log('Updated')
+    return res.status(200).json({ user })
   } catch (err) {
     console.log(err)
-    res.status(201).json({ someError: err })
+    return res.status(201).json({ someError: err })
+  }
+}
+
+export const reditprofileUser = async(req, res) => {
+  try {
+    const name = req.body.name
+    const email = req.body.email
+    const pass = req.body.pass
+    const isApplicant = req.body.isApplicant
+    const profile = req.body.profile
+    const contact = req.body.contact
+    const bio = req.body.bio
+
+    if (!(contact.length === 9 && !isNaN(contact))){
+      return res.status(201).json({ contact: 'Invalid contact number provided '})
+    } 
+    if (bio.split(' ').length + 1 > 250){
+      return res.status(201).json({ bio: 'Exceeded number of words '})
+    }
+
+    const user = {
+      name,
+      email,
+      pass,
+      isApplicant,
+      profile,
+      contact,
+      bio
+    }
+
+    const updateRes = await User.updateOne({ email: email }, {
+      name,
+      email,
+      pass,
+      isApplicant,
+      profile,
+      contact,
+      bio
+    })
+
+    return res.status(200).json({ user })
+  } catch (err) {
+    return res.status(201).json({ someError: err })
   }
 }

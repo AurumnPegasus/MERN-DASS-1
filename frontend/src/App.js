@@ -11,6 +11,11 @@ import Register from "./components/auth/Register";
 import Login from "./components/auth/Login";
 import Profile from "./components/applicant/Profile";
 import EditProfile from './components/applicant/EditProfile'
+import RProfile from './components/recruitor/RProfile'
+import REditProfile from './components/recruitor/REditProfile'
+import ViewJob from './components/recruitor/ViewJob'
+import CreateJob from './components/recruitor/CreateJob'
+import EditJob from './components/recruitor/EditJob'
 
 const App = () => {
   const [store, setStore] = useState({
@@ -58,6 +63,11 @@ const App = () => {
             <Route exact path="/login" component={Login} />
             <Route exact path="/profile" component={Profile} />
             <Route exact path='/editprofile' component={EditProfile} />
+            <Route exact path='/rprofile' component={RProfile} />
+            <Route exact path='/reditprofile' component={REditProfile} />
+            <Route exact path='/viewjob' component={ViewJob} />
+            <Route exact path='/createjob' component={CreateJob} />
+            <Route exact path='/editjob' component={EditJob} />
           </div>
         </Context.Provider>
       </div>

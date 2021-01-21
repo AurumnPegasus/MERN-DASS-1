@@ -2,7 +2,7 @@
 import express from "express";
 
 // Importing files
-import { registerUser, loginUser, profileUser, editprofileUser } from "../controllers/users.js";
+import { registerUser, loginUser, profileUser, editprofileUser, reditprofileUser } from "../controllers/users.js";
 
 // Constants
 const router = express.Router();
@@ -20,5 +20,8 @@ router.post('/profile', profileUser)
 
 // @route POST users/editprofile
 router.post('/editprofile', editprofileUser)
+
+// @route POST users/reditprofile
+router.post('/reditprofile', reditprofileUser)
 
 export default router;

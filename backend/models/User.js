@@ -33,7 +33,13 @@ const USER = new SCHEMA({
   }],
   skills: [{
     name: String
-  }]
+  }],
+  contact: {
+    type: String
+  },
+  bio: {
+    type: String
+  }
 });
 
 const User = mongoose.model("users", USER);

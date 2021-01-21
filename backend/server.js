@@ -8,6 +8,7 @@ import bodyParser from "body-parser";
 
 // Importing different files
 import userRoutes from "./routes/api/users.js";
+import jobRoutes from './routes/api/jobs.js'
 import passFile from "./config/passport.js";
 
 // Constants
@@ -24,6 +25,7 @@ app.use(
 app.use(bodyParser.json());
 app.use(cors());
 app.use("/users", userRoutes);
+app.use('/jobs', jobRoutes)
 
 // Database
 mongoose

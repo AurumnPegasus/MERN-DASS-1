@@ -10,7 +10,7 @@ const Login = () => {
   const [pass, setPass] = useState("");
   const [errors, setErrors] = useState("");
   const [redir, setRedir] = useState(false);
-  const { setStore } = useContext(Context)
+  const { store, setStore } = useContext(Context)
 
   const userData = {
     email,
@@ -19,7 +19,10 @@ const Login = () => {
 
   const redirectHandler= () => {
     if (redir) {
-      return <Redirect to='/profile'></Redirect>
+      if(store.user.isApplicant)
+        return <Redirect to='/profile'></Redirect>
+      else
+        return <Redirect to='/Rprofile'></Redirect>
     }
   }
 

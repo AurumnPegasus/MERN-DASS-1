@@ -1,16 +1,25 @@
 import React, { useState, useContext, useEffect } from "react";
+import { Redirect } from 'react-router-dom'
 import Context from "../../Context";
 import FileBase from "react-file-base64";
 import { Form } from "react-bootstrap";
 import axios from 'axios'
 
 const EditProfile = () => {
-  const { store } = useContext(Context);
+  const { store, setStore } = useContext(Context);
   const [name, setName] = useState('');
   const [profile, setProfile] = useState('');
   const [education, setEducation] = useState(null);
   const [loader, setLoader] = useState(false)
   const [skills, setSkills] = useState(null)
+  const [profLoad, setProfLoad] = useState(false)
+
+  const goBack = () => {
+    console.log('here')
+    if(profLoad) {
+      return <Redirect to='/profile'></Redirect>
+    }
+  }
 
   const handleSkillNameChange = (idx) => (e) => {
     const newSkills = skills.map((skill, sidx) => {
@@ -74,8 +83,11 @@ const EditProfile = () => {
         education,
         skills
       })
+      console.log(res)
       if (res.status === 200){
         console.log('Success')
+        setProfLoad(true)
+        setStore({ ...store, user: res.data.user })
       } else if (res.data.updateError) {
         console.log(res.data.updateError)
       } else {
@@ -221,6 +233,9 @@ const EditProfile = () => {
     <div>
       <div>
         {renderDisplay()}
+      </div>
+      <div>
+        {goBack()}
       </div>
     </div>
   )
