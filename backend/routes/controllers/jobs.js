@@ -35,11 +35,10 @@ export const createJob = async (req, res) => {
         const email = req.body.email
         const applicants = req.body.applicants
         const positions = req.body.positions
-        let skillsList = req.body.skills
+        const skills = req.body.skills
         const jobtype = req.body.jobtype
         const duration = req.body.duration
         const salary = req.body.salary
-        let skillFinal = []
 
         const job = await Job.findOne({ title });
         if (job) {
@@ -58,14 +57,7 @@ export const createJob = async (req, res) => {
             return res.status(201).json({ duration: 'Duration must be from 1-6 months'})
         } else if(salary<1){
             return res.status(201).json({ salary: 'Against labour laws :p' })
-        } else {
-            for(let skill of skillsList){
-                if(skill.name.length >0){
-                    skillFinal.concat(skill)
-                }
-            }
         }
-        const skills = skillFinal
 
         const newJob = new Job({
             title, 
@@ -147,5 +139,15 @@ export const editJob = async (req, res) => {
     } catch(err) {
         console.log(err.message)
         return res.status(201).json({ someError: err })
+    }
+}
+
+export const deleteJob = async (req, res) => {
+    try {
+        const title = req.body.title
+        const job = await Job.findOneAndDelete({ title })
+        return res.status(200).json({ success: 'Success' })
+    } catch (err) {
+        return res.status(201).json({ someError: err.message })
     }
 }

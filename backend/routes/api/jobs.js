@@ -1,7 +1,7 @@
 // Importing required framework/libraries
 import express from "express";
 
-import { viewJob, createJob, getJob, editJob, rJob } from '../controllers/jobs.js'
+import { viewJob, createJob, getJob, editJob, rJob, deleteJob } from '../controllers/jobs.js'
 
 // Constants
 const router = express.Router();
@@ -22,5 +22,8 @@ router.post('/editjob', editJob)
 
 // @route POST jobs/rjob
 router.post('/rjob', rJob);
+
+// @route POST jobs/deletejob
+router.post('/deletejob', deleteJob)
 
 export default router;

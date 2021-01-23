@@ -41,6 +41,7 @@ const ViewJob = () => {
 
     const displaySkill = (skill, sidx) => {
         try {
+            if (skill.name.length === 0) return
             return (
                 <div>
                     <p>
@@ -50,6 +51,17 @@ const ViewJob = () => {
             )
         } catch (err) {
             console.log(err)
+        }
+    }
+
+    const deleteMe = async (title) => {
+        try {
+            const res = axios.post('http://localhost:5000/jobs/deletejob', {
+                title
+            })
+            console.log(res)
+        } catch (err) {
+            console.log(err.message)
         }
     }
 
@@ -89,6 +101,9 @@ const ViewJob = () => {
                     <p>
                         <b>{`salary: `}</b> {`$ ${job.salary}`}
                     </p>
+                    <button onClick={() => deleteMe(job.title)}>
+                        Delete Job
+                    </button>
                 </div>
             )
         } catch (err) {

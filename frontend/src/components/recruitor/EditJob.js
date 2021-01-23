@@ -56,6 +56,7 @@ const EditJob = () => {
                 setSkills(res.data.job.skills)
                 setJobtype(res.data.job.jobtype)
                 setSalary(res.data.job.salary)
+                setDuration(res.data.job.duration)
                 setNErrors({})
                 setSee(false)
                 setLoad(true)
