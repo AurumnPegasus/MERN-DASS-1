@@ -9,6 +9,7 @@ const ViewJob = () => {
     const [loader, setLoader] = useState(false)
     const [create, setCreate] = useState(false)
     const [edit, setEdit] = useState(false)
+    const [del, setDel] = useState(false)
     const [jobs, setJobs] = useState(null)
 
     const jobBanao = () => {
@@ -20,6 +21,12 @@ const ViewJob = () => {
     const editJob = () => {
         if(edit) {
             return <Redirect to='/editjob'></Redirect>
+        }
+    }
+
+    const deleteJob = () => {
+        if(del) {
+            return <Redirect to='/deletejob'></Redirect>
         }
     }
 
@@ -51,17 +58,6 @@ const ViewJob = () => {
             )
         } catch (err) {
             console.log(err)
-        }
-    }
-
-    const deleteMe = async (title) => {
-        try {
-            const res = axios.post('http://localhost:5000/jobs/deletejob', {
-                title
-            })
-            console.log(res)
-        } catch (err) {
-            console.log(err.message)
         }
     }
 
@@ -101,9 +97,6 @@ const ViewJob = () => {
                     <p>
                         <b>{`salary: `}</b> {`$ ${job.salary}`}
                     </p>
-                    <button onClick={() => deleteMe(job.title)}>
-                        Delete Job
-                    </button>
                 </div>
             )
         } catch (err) {
@@ -143,6 +136,13 @@ const ViewJob = () => {
                             onClick={() => setEdit(true)}
                         >Edit</button>
                     </div>
+                    <div className='col s12' style={{ margin: '10px' }}>
+                        <button className='btn waves-effect waves-light hoverable blue accent 3'
+                                type='submit'
+                                onClick={() => setDel(true)}>
+                            Delete
+                        </button>
+                    </div>
                 </div>
             )
         }
@@ -156,6 +156,7 @@ const ViewJob = () => {
             <div>
                 {jobBanao()}
                 {editJob()}
+                {deleteJob()}
             </div>
         </div>
     )

@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 
 // Importing files
 import User from "../../models/User.js";
+import Applicants from '../../models/Application.js'
 import Job from '../../models/Job.js'
 
 // Initialisation
@@ -122,7 +123,7 @@ export const editJob = async (req, res) => {
             salary
         }
 
-        const jobres = await Job.updateOne({ title }, {
+        const jobres = await Job.updateOne({ title, email }, {
             title,
             name,
             email,
@@ -145,7 +146,13 @@ export const editJob = async (req, res) => {
 export const deleteJob = async (req, res) => {
     try {
         const title = req.body.title
+        const email = req.body.email
+        const j = await Job.findOne({title, email})
+        if (!j) {
+            return res.status(201).json({ title: 'No such title exists'})
+        }
         const job = await Job.findOneAndDelete({ title })
+        const apps = await Applicants.deleteMany({ title })
         return res.status(200).json({ success: 'Success' })
     } catch (err) {
         return res.status(201).json({ someError: err.message })

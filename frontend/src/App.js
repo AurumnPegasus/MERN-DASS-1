@@ -16,6 +16,8 @@ import ViewJob from './components/recruitor/ViewJob'
 import CreateJob from './components/recruitor/CreateJob'
 import EditJob from './components/recruitor/EditJob'
 import AViewJob from './components/applicant/ViewJob'
+import MyApplications from './components/applicant/MyApplications'
+import DeleteJob from './components/recruitor/DeleteJob'
 
 const App = () => {
   const [store, setStore] = useState({
@@ -69,6 +71,8 @@ const App = () => {
             <Route exact path='/createjob' component={CreateJob} />
             <Route exact path='/editjob' component={EditJob} />
             <Route exact path='/aviewjob' component={AViewJob} />
+            <Route exact path='/myapps' component={MyApplications} />
+            <Route exact path='/deletejob' component={DeleteJob} />
           </div>
         </Context.Provider>
       </div>

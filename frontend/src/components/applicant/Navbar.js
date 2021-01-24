@@ -6,6 +6,7 @@ const Navbar = () => {
 
   const [job, setJob] = useState(false)
   const [profile, setProfile] = useState(false)
+  const [apps, setApps] = useState(false)
 
   const viewProfile = () =>{
     if(profile) return <Redirect to='/profile'></Redirect>
@@ -14,6 +15,10 @@ const Navbar = () => {
   const viewJob = () => {
     if (job) return <Redirect to='/aviewjob'></Redirect>
   }
+  
+  const viewApps = () => {
+    if (apps) return <Redirect to='/myapps'></Redirect>
+  }
 
   return (
     <div>
@@ -21,9 +26,8 @@ const Navbar = () => {
         <div className="nav-content">
           <ul className="tabs tabs-transparent">
             <li className="tab">
-              <BrowserRouter>
-                <Link to="/">One</Link>
-              </BrowserRouter>
+              <button onClick={() => setApps(true)}>My Applications</button>
+              {viewApps()}
             </li>
             <li className="tab">
               <button onClick={() => setJob(true)}>Job</button>

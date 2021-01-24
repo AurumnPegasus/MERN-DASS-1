@@ -26,7 +26,7 @@ const Navbar = () => {
           <ul className="tabs tabs-transparent">
             <li className="tab">
               <BrowserRouter>
-                <Link to="/">One</Link>
+                <Link to="/">My Applications</Link>
               </BrowserRouter>
             </li>
             <li className="tab">

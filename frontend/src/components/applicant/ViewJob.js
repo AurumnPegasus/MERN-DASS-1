@@ -3,6 +3,9 @@ import { Redirect } from 'react-router-dom'
 import Context from '../../Context'
 import Navbar from './Navbar'
 import axios from 'axios'
+import Fuse from 'fuse.js'
+import {Form} from 'react-bootstrap'
+import classnames from 'classnames'
 import {
     InputLabel,
     MenuItem,
@@ -17,11 +20,17 @@ const AViewJob = () => {
     const { store } = useContext(Context)
     const [loader, setLoader] = useState(false)
     const [jobs, setJobs] = useState(null)
+    const [backup, setBackup] = useState(null)
     const [jobtype, setJobtype] = useState('')
     const [salary, setSalary] = useState([0, 100])
     const [duration, setDuration] = useState(null)
     const [sortSal, setSortSal] = useState(null)
     const [sortDur, setSortDur] = useState(null)
+    const [query, setQuery] = useState('')
+    const [apply, setApply] = useState(false)
+    const [ajob, setAjob] = useState(null)
+    const [sop, setSop] = useState('')
+    const [errors, setErrors] = useState({})
 
     useEffect(() => {
         async function timepass() {
@@ -29,6 +38,7 @@ const AViewJob = () => {
             if (store.user !== undefined) {
                 const jobList = await axios.get('http://localhost:3000/jobs/viewjob')
                 setJobs(jobList.data.jobs)
+                setBackup(jobList.data.jobs)
                 setLoader(true)
             }
         }
@@ -87,11 +97,27 @@ const AViewJob = () => {
                     <p>
                         <b>{`salary: `}</b> {`$ ${job.salary}`}
                     </p>
+                    <button
+                        style={{marginTop: '20px', marginLeft: '10px'}}
+                        variant="contained"
+                        color="primary"
+                        type="submit"
+                        className="btn btn-large waves-effect waves-light hoverable blue accent-3"
+                        onClick={() => makeApplication(job)}
+                        >
+                        Apply
+                    </button>
                 </div>
             )
         } catch (err) {
             console.log(err)
         }
+    }
+
+    const makeApplication = (job) => {
+        setApply(true)
+        setAjob(job)
+        setErrors({})
     }
 
     const limitJobs = (job, idx) => {
@@ -171,6 +197,22 @@ const AViewJob = () => {
         setSalary([0,100])
         setJobtype('')
         setDuration(null)
+    }
+    
+    const onSearch = currentTarget => {
+        const fuse = new Fuse(backup, {
+            keys: [
+                'title',
+            ]
+        })
+        setQuery(currentTarget)
+        if(query !== '')
+        {
+            console.log(fuse.search(query).map(item => item.item))
+            setJobs([...fuse.search(query).map(item => item.item)])
+        } else {
+            setJobs(backup)
+        }
     }
 
     const classes = slideStyles()
@@ -306,9 +348,179 @@ const AViewJob = () => {
                                     Sort
                             </button>
                         </div>
-                        < hr/>
+                        <div className='row'>
+                            < hr />
+                            <form noValidate onSubmit={e => e.preventDefault()}>
+                                <div className='input-field col s12'>
+                                    <input 
+                                        id='fuzzy'
+                                        type='text'
+                                        value={query}
+                                        onChange={e => onSearch(e.target.value)}
+                                    />
+                                    <label htmlFor='fuzzy'>Search</label>
+                                </div>
+                            </form>
+                        </div>
                         {nor()}
                     </div>
+                </div>
+            )
+        }
+    }
+
+    const submitMe = async () => {
+        try {   
+            console.log('here')
+            let res = await axios.post('http://localhost:5000/users/apply', {
+                title: ajob.title,
+                myEmail: store.user.email,
+                email: ajob.email,
+                status: 'Waiting',
+                sop
+            })
+            console.log(res)
+            if(res.status === 200){
+                console.log('Success')
+                setApply(false)
+                setErrors({})
+            } else if (res.data.sop){
+                setErrors({ sop: res.data.sop})
+            }else {
+                setErrors({ someError: res.data.someError })
+            }
+        } catch(err) {
+            console.log(err.message)
+        }
+    }
+
+    const renderApplication = () => {
+        if(loader) {
+            return(
+                <div className='container'>
+                    <div className='center'>
+                        <h2>Apply for Job</h2>
+                        <hr />
+                    </div>
+                    <Form>
+                        <Form.Group controid='title'>
+                            <Form.Label>Title</Form.Label>
+                            <Form.Control 
+                                type='text'
+                                plaintext
+                                defaultValue={ajob.title}
+                                readOnly
+                            />
+                        </Form.Group>
+                        <Form.Group controid='name'>
+                            <Form.Label>Name</Form.Label>
+                            <Form.Control 
+                                type='text'
+                                plaintext
+                                defaultValue={ajob.name}
+                                readOnly
+                            />
+                        </Form.Group>
+                        <Form.Group controid='email'>
+                            <Form.Label>Email</Form.Label>
+                            <Form.Control 
+                                type='email'
+                                plaintext
+                                defaultValue={ajob.email}
+                                readOnly
+                            />
+                        </Form.Group>
+                        <Form.Group controid='applicants'>
+                            <Form.Label>Max number of Applicants</Form.Label>
+                            <Form.Control 
+                                type='number'
+                                plaintext
+                                defaultValue={ajob.applicants}
+                                readOnly
+                            />
+                        </Form.Group>
+                        <Form.Group controid='positions'>
+                            <Form.Label>Max number of Positons</Form.Label>
+                            <Form.Control 
+                                type='number'
+                                plaintext
+                                defaultValue={ajob.positions}
+                                readOnly
+                            />
+                        </Form.Group>
+                        <Form.Group controlid='skills'>
+                            <Form.Label>Skills</Form.Label>
+                            {ajob.skills.map((skill, idx) => (
+                                <div className='skill'>
+                                    <input 
+                                        type='text'
+                                        placeholder={`Skill #${idx + 1} name`}
+                                        value={skill.name}
+                                        readOnly
+                                    />
+                                </div>
+                            ))}
+                        </Form.Group>
+                        <Form.Group controid='job type'>
+                            <Form.Label>Job Type</Form.Label>
+                            <Form.Control 
+                                type='text'
+                                plaintext
+                                defaultValue={ajob.jobtype}
+                                readOnly
+                            />
+                        </Form.Group>
+                        <Form.Group controid='months'>
+                            <Form.Label>Duration of Job</Form.Label>
+                            <Form.Control 
+                                type='number'
+                                plaintext
+                                defaultValue={ajob.duration}
+                                readOnly
+                            />
+                        </Form.Group>
+                        <Form.Group controid='salary'>
+                            <Form.Label>Salary of Job</Form.Label>
+                            <Form.Control 
+                                type='number'
+                                plaintext
+                                defaultValue={ajob.salary}
+                                readOnly
+                            />
+                        </Form.Group>
+                        <Form.Group controid='sop'>
+                            <Form.Label>Statement of Purpose</Form.Label>
+                            <Form.Control 
+                                type='text'
+                                plaintext
+                                defaultValue={sop}
+                                className={classnames('', {invalid: errors.sop})}
+                                onChange={e => setSop(e.target.value)}
+                            />
+                            <span className='red-text'>{errors.sop}</span>
+                        </Form.Group>
+                    </Form>
+                    <button
+                        style={{margin: '10px'}}
+                        variant="contained"
+                        color="primary"
+                        type="submit"
+                        className="btn btn-large waves-effect waves-light hoverable blue accent-3"
+                        onClick={() => setApply(false)}
+                        >
+                        Go Back
+                    </button>
+                    <button
+                        style={{margin: '10px'}}
+                        variant="contained"
+                        color="primary"
+                        type="submit"
+                        className={classnames("btn btn-large waves-effect waves-light hoverable blue accent-3", {invalid: errors.someError})}
+                        onClick={() => submitMe()}
+                        >
+                        Submit
+                    </button>
+                    <span className='red-text'>{errors.someError}</span>
                 </div>
             )
         }
@@ -317,7 +529,7 @@ const AViewJob = () => {
     return (
         <div>
             <div>
-                {renderDisplay()}
+                {apply? renderApplication() : renderDisplay()}
             </div>
             <div>
             </div>

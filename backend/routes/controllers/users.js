@@ -7,6 +7,8 @@ import dotenv from "dotenv";
 import validateRegister from "../../validation/register.js";
 import validateLogin from "../../validation/login.js";
 import User from "../../models/User.js";
+import Job from '../../models/Job.js'
+import Application from '../../models/Application.js'
 import images from "../../config/default.js";
 
 // Initialisation
@@ -184,5 +186,54 @@ export const reditprofileUser = async(req, res) => {
     return res.status(200).json({ user })
   } catch (err) {
     return res.status(201).json({ someError: err })
+  }
+}
+
+export const apply = async (req, res) => {
+  try {
+    const title = req.body.title
+    const email = req.body.email
+    const myEmail = req.body.myEmail
+    const status = req.body.status
+    const sop = req.body.sop
+    const application = await Application.findOne({ title, email })
+    if (application) {
+      return res.status(201).json({ someError: 'Already Applied here bud' })
+    } else if (sop.split(' ').length + 1 > 250 || sop.length===0) {
+      return res.status(201).json({ sop: 'Invalid length of SOP, must be between 1 and 250 words'})
+    }
+    const newApplication = new Application({
+      title, 
+      email,
+      myEmail,
+      status, 
+      sop
+    })
+
+    newApplication.save()
+        .then(application => res.status(200).json({application}))
+        .catch(err => res.status(201).json({ someError: err.message }))
+  } catch(err) {
+    return res.status(201).json({ someError: err.message })
+  }
+}
+
+export const myApps = async (req, res) => {
+  try{
+    let returnObj = []
+    const appsList = await Application.find({myEmail: req.body.email})
+    for(let i in appsList){
+      const response = await Job.find({ title: appsList[i].title })
+      returnObj.push({
+        title: appsList[i].title,
+        email: appsList[i].email,
+        status: appsList[i].status,
+        name: response[0].name,
+        salary: response[0].salary
+      })
+    }
+    return res.status(200).json({ apps: returnObj })
+  } catch(err) {
+    return res.status(201).json({someError: err.message})
   }
 }
