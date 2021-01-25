@@ -384,6 +384,7 @@ const AViewJob = () => {
                 console.log('Success')
                 setApply(false)
                 setErrors({})
+                setSop('')
             } else if (res.data.sop){
                 setErrors({ sop: res.data.sop})
             }else {

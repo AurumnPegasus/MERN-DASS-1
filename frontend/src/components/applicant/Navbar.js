@@ -7,6 +7,7 @@ const Navbar = () => {
   const [job, setJob] = useState(false)
   const [profile, setProfile] = useState(false)
   const [apps, setApps] = useState(false)
+  const [sign, setSign] = useState(false)
 
   const viewProfile = () =>{
     if(profile) return <Redirect to='/profile'></Redirect>
@@ -18,6 +19,13 @@ const Navbar = () => {
   
   const viewApps = () => {
     if (apps) return <Redirect to='/myapps'></Redirect>
+  }
+  
+  const viewSign = () => {
+    if(sign) {
+      localStorage.clear()
+      return <Redirect to='/login'></Redirect>
+    }
   }
 
   return (
@@ -36,6 +44,10 @@ const Navbar = () => {
             <li className="tab">
               <button onClick={() => setProfile(true)}>My Profile</button>
               {viewProfile()}
+            </li>
+            <li className="tab">
+              <button onClick={() => setSign(true)}>Sign out</button>
+              {viewSign()}
             </li>
           </ul>
         </div>

@@ -197,10 +197,14 @@ export const apply = async (req, res) => {
     const status = req.body.status
     const sop = req.body.sop
     const application = await Application.findOne({ title, email })
+    const appNo = await Application.find({ myEmail })
+    console.log(appNo.length)
     if (application) {
       return res.status(201).json({ someError: 'Already Applied here bud' })
     } else if (sop.split(' ').length + 1 > 250 || sop.length===0) {
       return res.status(201).json({ sop: 'Invalid length of SOP, must be between 1 and 250 words'})
+    } else if(appNo.length > 10) {
+      return res.status(201).json({ someError: 'Limit is 10 Applications at a time '})
     }
     const newApplication = new Application({
       title, 
@@ -235,5 +239,85 @@ export const myApps = async (req, res) => {
     return res.status(200).json({ apps: returnObj })
   } catch(err) {
     return res.status(201).json({someError: err.message})
+  }
+}
+
+export const rmyApps = async (req, res) => {
+  try {
+    let returnObj = []
+    const appsList = await Application.find({ title: req.body.title })
+    for(let i in appsList) {
+      const response = await User.findOne({ email: appsList[i].myEmail })
+      if(appsList[i].status === 'reject') {
+        continue;
+      }
+      returnObj.push({
+        title: appsList[i].title,
+        name: response.name,
+        skills: response.skills,
+        sop: appsList[i].sop,
+        status: appsList[i].status,
+        education: response.education
+      })
+    }
+    console.log(req.body.title)
+    return res.status(200).json({ apps: returnObj })
+  } catch (err) {
+    return res.status(201).json({ someError: err.message })
+  }
+}
+
+export const status = async (req, res) => {
+  try {
+    const title = req.body.title
+    const email = req.body.email
+    console.log(title)
+    console.log(email)
+    const status = req.body.status
+    const response = await Application.findOne({ title, email })
+    const application = {
+      title,
+      email,
+      myEmail: response.myEmail,
+      status,
+      sop: response.sop
+    }
+
+    const updateRes = await Application.updateOne({email, title}, {
+      title,
+      email,
+      myEmail: response.myEmail,
+      status,
+      sop: response.sop 
+    })
+
+    return res.status(200).json({ application })
+
+  } catch (err) {
+    return res.status(201).json({ someError: err })
+  }
+}
+
+export const applicant = async (req, res) => {
+  try {
+    const email = req.body.email
+    const response = await Application.find({ email, status: 'accept'})
+    const responseObj = []
+    for(let i in response){
+      const myEmail = response[i].myEmail
+      const title = response[i].title
+      const user = await User.findOne({ email: myEmail })
+      const name = user.name
+      const job = await Job.findOne({ title })
+      const jobtype = job.jobtype
+      responseObj.push({
+        name,
+        jobtype,
+        title
+      })
+    }
+    return res.status(200).json({ apps: responseObj })
+  } catch (err) {
+    return res.status(201).json({ someError: err.message })
   }
 }

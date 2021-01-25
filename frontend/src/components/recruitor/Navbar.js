@@ -1,11 +1,13 @@
 // Importing required frameworks/libraries
 import React, { useState } from "react";
-import { Link, BrowserRouter, Redirect } from "react-router-dom";
+import { Redirect } from "react-router-dom";
 
 const Navbar = () => {
 
   const [job, setJob] = useState(false)
   const [profile, setProfile] = useState(false)
+  const [sign, setSign] = useState(false)
+  const [app, setApp] = useState(false)
 
   const viewProfile = () => {
     if (profile) {
@@ -19,15 +21,31 @@ const Navbar = () => {
     }
   }
 
+  const viewSign = () => {
+    if (sign) {
+      localStorage.clear()
+      return <Redirect to='/login'></Redirect>
+    }
+  }
+
+  const viewApp = () => {
+    if(app){
+      return <Redirect to='/naukar'></Redirect>
+    }
+  }
+
   return (
     <div>
       <nav className="nav-extended">
         <div className="nav-content">
           <ul className="tabs tabs-transparent">
             <li className="tab">
-              <BrowserRouter>
-                <Link to="/">My Applications</Link>
-              </BrowserRouter>
+              <button onClick={() => setSign(true)}> Sign Out </button>
+              {viewSign()}
+            </li>
+            <li className="tab">
+              <button onClick={() => setApp(true)}> My Applicants </button>
+              {viewApp()}
             </li>
             <li className="tab">
               <button onClick={() => setJob(true)}>Job</button>
