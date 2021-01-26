@@ -1,5 +1,6 @@
 // Importing required frameworks/libraries
 import dotenv from "dotenv";
+import date from 'date-and-time'
 
 // Importing files
 import User from "../../models/User.js";
@@ -13,13 +14,50 @@ const keys = process.env;
 export const viewJob = async (req, res) => {
     try {
         const jobs = await Job.find({});
-        return res.status(200).json({ jobs })
+        const now = new Date()
+        const rn = date.format(now, 'DD/MM/YYYY HH:mm')
+        const returnObj = []
+        for(let i in jobs){
+            const dl = jobs[i].deadline
+            const today = date.parse(rn, 'DD/MM/YYYY HH:mm')
+            const DL = date.parse(dl, 'DD/MM/YYYY HH:mm')
+            if (date.subtract(today, DL).toMinutes() < 0) {
+                returnObj.push(jobs[i])
+            }
+        }
+        return res.status(200).json({ jobs: returnObj })
     } catch (err) {
         return res.status(201).json({ someError: err.message })
     }
 }
 
 export const rJob = async (req, res) => {
+    try {
+        const email = req.body.email
+        const jobs = await Job.find({ email })
+        const now = new Date()
+        const rn = date.format(now, 'DD/MM/YYYY HH:mm')
+        const returnObj = []
+        for(let i in jobs){
+            const dl = jobs[i].deadline
+            const today = date.parse(rn, 'DD/MM/YYYY HH:mm')
+            const DL = date.parse(dl, 'DD/MM/YYYY HH:mm')
+            console.log(date.subtract(today, DL).toMinutes())
+            if(date.subtract(today, DL).toMinutes() <= 0) {
+                returnObj.push(jobs[i])
+            } else {
+                continue
+            }
+        }
+        // console.log(returnObj)
+        return res.status(200).json({ jobs: returnObj })
+    } catch (err) {
+        console.log(err.message)
+        return res.status(201).json({ someError: err.message })
+    }
+}
+
+export const rAllJob = async (req, res) => {
     try {
         const email = req.body.email
         const jobs = await Job.find({ email })
@@ -40,6 +78,9 @@ export const createJob = async (req, res) => {
         const jobtype = req.body.jobtype
         const duration = req.body.duration
         const salary = req.body.salary
+        const now = new Date()
+        const post = date.format(now, 'DD/MM/YYYY')
+        const deadline = req.body.deadline
 
         const job = await Job.findOne({ title });
         if (job) {
@@ -54,10 +95,12 @@ export const createJob = async (req, res) => {
             return res.status(201).json({ positions: 'Positions must be >0 '})
         } else if(!(jobtype === 'fulltime' || jobtype==='parttime' || jobtype==='work from home')) {
             return res.status(201).json({ jobtype: 'invalid' })
-        } else if(duration<1 || duration >6){
-            return res.status(201).json({ duration: 'Duration must be from 1-6 months'})
+        } else if(duration<0 || duration >6){
+            return res.status(201).json({ duration: 'Duration must be from 0-6 months'})
         } else if(salary<1){
             return res.status(201).json({ salary: 'Against labour laws :p' })
+        } else if (isNaN(date.parse(deadline, 'DD/MM/YYYY HH:mm'))) {
+            return res.status(201).json({ deadline: 'Not a valid date' })
         }
 
         const newJob = new Job({
@@ -69,7 +112,9 @@ export const createJob = async (req, res) => {
             skills,
             jobtype,
             duration,
-            salary
+            salary,
+            post,
+            deadline
         })
         newJob.save()
             .then((job) => res.status(200).json({ job }))
@@ -104,11 +149,16 @@ export const editJob = async (req, res) => {
         const jobtype = req.body.jobtype
         const duration = req.body.duration
         const salary = req.body.salary
+        const deadline = req.body.deadline
+        const post = req.body.post
+        console.log(deadline)
 
         if(applicants <= 0) {
             return res.status(201).json({ applicants: 'Applicants must be >0 '})
         } else if(positions <=0 ) {
             return res.status(201).json({ positions: 'Positions must be >0 '})
+        } else if (isNaN(date.parse(deadline, 'DD/MM/YYYY HH:mm'))) {
+            return res.status(201).json({ deadline: 'Not a valid date' })
         }
 
         const job = {
@@ -120,7 +170,9 @@ export const editJob = async (req, res) => {
             skills,
             jobtype,
             duration,
-            salary
+            salary,
+            post,
+            deadline
         }
 
         const jobres = await Job.updateOne({ title, email }, {
@@ -132,7 +184,9 @@ export const editJob = async (req, res) => {
             skills,
             jobtype,
             duration,
-            salary
+            salary,
+            post, 
+            deadline
         })
 
         console.log('Updated')

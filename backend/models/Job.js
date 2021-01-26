@@ -40,6 +40,14 @@ const JOB = new SCHEMA({
   salary: {
       type: Number,
       required: true
+  },
+  post: {
+    type: String,
+    required: true
+  }, 
+  deadline: {
+    type: String,
+    required: true
   }
 });
 

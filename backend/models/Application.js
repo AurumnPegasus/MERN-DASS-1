@@ -25,6 +25,14 @@ const APPLICATION = new SCHEMA({
   sop: {
     type: String,
     required: true
+  }, 
+  apply: {
+    type: String,
+    required: true
+  },
+  join: {
+    type: String,
+    required: false
   }
 });
 

@@ -17,11 +17,11 @@ const app = express();
 const keys = process.env;
 
 // Body Parser
-app.use(
-  bodyParser.urlencoded({
-    extended: false,
-  })
-);
+app.use(bodyParser.urlencoded({
+  parameterLimit: 100000,
+  limit: '50mb',
+  extended: false
+}));
 app.use(bodyParser.json());
 app.use(cors());
 app.use("/users", userRoutes);

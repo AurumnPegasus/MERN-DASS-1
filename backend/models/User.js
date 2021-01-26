@@ -39,6 +39,9 @@ const USER = new SCHEMA({
   },
   bio: {
     type: String
+  },
+  hasJob: {
+    type: Boolean
   }
 });
 
