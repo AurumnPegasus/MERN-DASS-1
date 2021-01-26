@@ -97,8 +97,8 @@ export const createJob = async (req, res) => {
             return res.status(201).json({ jobtype: 'invalid' })
         } else if(duration<0 || duration >6){
             return res.status(201).json({ duration: 'Duration must be from 0-6 months'})
-        } else if(salary<1){
-            return res.status(201).json({ salary: 'Against labour laws :p' })
+        } else if(salary<1 && salary>100){
+            return res.status(201).json({ salary: 'Salary must be between 1-100' })
         } else if (isNaN(date.parse(deadline, 'DD/MM/YYYY HH:mm'))) {
             return res.status(201).json({ deadline: 'Not a valid date' })
         }

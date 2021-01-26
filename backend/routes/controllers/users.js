@@ -210,7 +210,7 @@ export const reditprofileUser = async(req, res) => {
     const contact = req.body.contact
     const bio = req.body.bio
 
-    if (!(contact.length === 9 && !isNaN(contact))){
+    if (!(contact.length === 10 && !isNaN(contact))){
       return res.status(201).json({ contact: 'Invalid contact number provided '})
     } 
     if (bio.split(' ').length + 1 > 250){
@@ -354,7 +354,7 @@ export const status = async (req, res) => {
 
     if (status === 'accept') {
       const appres = await Application.find({ myEmail })
-      let mailTransporter = nodemailer.createTransport({ 
+      let mail = nodemailer.createTransport({ 
           service: 'gmail', 
           auth: { 
               user: 'shivansh.trial@gmail.com', 
@@ -362,20 +362,13 @@ export const status = async (req, res) => {
           } 
       }); 
         
-      let mailDetails = { 
+      let details = { 
           from: 'shivansh.trial@gmail.com', 
           to: myEmail, 
           subject: 'MERN DASS ASS-1', 
           text: 'You got the job :) <3'
       }; 
-      
-      mailTransporter.sendMail(mailDetails, function(err, data) { 
-          if(err) { 
-              console.log('Error Occurs'); 
-          } else { 
-              console.log('Email sent successfully'); 
-          } 
-      }); 
+
       const userres = await User.findOne({ email: myEmail })
       const ur = await User.updateOne({ email: myEmail}, {
         name: userres.name,
@@ -389,6 +382,15 @@ export const status = async (req, res) => {
         bio: userres.bio,
         hasJob: true
       })
+
+            
+      mail.sendMail(details, function(err, data) { 
+        if(err) { 
+            console.log('Error'); 
+        } else { 
+            console.log('Email sent successfully'); 
+        } 
+    }); 
       for(let i in appres){
         if(appres[i].title !== title){
           const ures = await Application.updateOne({myEmail, title: appres[i].title}, {

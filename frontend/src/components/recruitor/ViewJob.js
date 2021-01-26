@@ -377,7 +377,7 @@ const ViewJob = () => {
                 <div>
                     <Navbar/>
                     <div className='header center'>
-                        <h3><b>View Active Jobs</b></h3>
+                        <h3><b>View All Jobs</b></h3>
                     </div>
                     <div className='row container'>
                         <form className='col s12'>
