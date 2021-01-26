@@ -15,7 +15,7 @@ import {
 } from '@material-ui/core'
 
 
-const ViewJob = () => {
+const ActiveJob = () => {
     const { store } = useContext(Context)
     const [loader, setLoader] = useState(false)
     const [create, setCreate] = useState(false)
@@ -56,7 +56,7 @@ const ViewJob = () => {
         async function timepass() {
             if(loader) return
             if (store.user !== undefined) {
-                const jobList = await axios.post('http://localhost:3000/jobs/ralljob', {
+                const jobList = await axios.post('http://localhost:3000/jobs/rjob', {
                     email: store.user.email
                 })
                 setJobs(jobList.data.jobs)
@@ -429,4 +429,4 @@ const ViewJob = () => {
     )
 }
 
-export default ViewJob
+export default ActiveJob

@@ -19,6 +19,7 @@ const CreateJob = () => {
     const [salary, setSalary] = useState(0) 
     const [errors, setErrors] = useState({})
     const [back, setBack] = useState(false)
+    const [deadline, setDeadline] = useState('')
     
     useEffect(() => {
         if(loader) return
@@ -46,7 +47,8 @@ const CreateJob = () => {
                 skills,
                 jobtype,
                 duration,
-                salary
+                salary,
+                deadline
             })
             console.log(res)
             if(res.status === 200) {
@@ -59,6 +61,7 @@ const CreateJob = () => {
                 setSalary(0)
                 setErrors({})
                 setBack(true)
+                setDeadline('')
                 console.log('Success')
             } else if(res.data.title){
                 setErrors({ title: res.data.title })
@@ -72,6 +75,8 @@ const CreateJob = () => {
                 setErrors({ duration: res.data.duration })
             } else if(res.data.salary) {
                 setErrors({ salary: res.data.salary })
+            } else if(res.data.deadline) {
+                setErrors({ deadline: res.data.deadline })
             } else {
                 console.log(res.data.someError)
             }
@@ -208,6 +213,17 @@ const CreateJob = () => {
                                 onChange={e => setSalary(e.target.value)}
                             />
                             <span className='red-text'>{errors.salary}</span>
+                        </Form.Group>
+                        <Form.Group controid='deadline'>
+                            <Form.Label>Deadline for Applications</Form.Label>
+                            <Form.Control 
+                                className={classnames('', {invalid: errors.deadline})}
+                                type='text'
+                                plaintext
+                                defaultValue={deadline}
+                                onChange={e => setDeadline(e.target.value)}
+                            />
+                            <span className='red-text'>{errors.deadline}</span>
                         </Form.Group>
                     </Form>
                     <div className='col s12' style={{ margin: '10px' }}>

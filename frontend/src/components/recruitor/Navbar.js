@@ -8,10 +8,17 @@ const Navbar = () => {
   const [profile, setProfile] = useState(false)
   const [sign, setSign] = useState(false)
   const [app, setApp] = useState(false)
+  const [ajob, setAJob] = useState(false)
 
   const viewProfile = () => {
     if (profile) {
       return <Redirect to='/rprofile'></Redirect>
+    }
+  }
+  
+  const viewAJob = () => {
+    if(ajob) {
+      return <Redirect to='/activejob'></Redirect>
     }
   }
 
@@ -48,8 +55,12 @@ const Navbar = () => {
               {viewApp()}
             </li>
             <li className="tab">
-              <button onClick={() => setJob(true)}>Job</button>
+              <button onClick={() => setJob(true)}>All Jobs</button>
               {viewJob()}
+            </li>
+            <li className="tab">
+              <button onClick={() => setAJob(true)}>Active Jobs</button>
+              {viewAJob()}
             </li>
             <li className="tab">
             <button onClick={() => setProfile(true)}>My Profile</button>

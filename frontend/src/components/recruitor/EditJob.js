@@ -22,7 +22,9 @@ const EditJob = () => {
     const [etitle, setEtitle] = useState('')
     const [see, setSee] = useState(false)
     const [load, setLoad] = useState(false) 
-    const [errors, setErrors] = useState({}) 
+    const [errors, setErrors] = useState({})
+    const [deadline, setDeadline] = useState('') 
+    const [post, setPost] = useState('')
      
     useEffect(() => {
         if(loader) return
@@ -57,6 +59,8 @@ const EditJob = () => {
                 setJobtype(res.data.job.jobtype)
                 setSalary(res.data.job.salary)
                 setDuration(res.data.job.duration)
+                setDeadline(res.data.job.deadline)
+                setPost(res.data.job.post)
                 setNErrors({})
                 setSee(false)
                 setLoad(true)
@@ -81,7 +85,9 @@ const EditJob = () => {
                 skills,
                 jobtype,
                 duration,
-                salary
+                salary,
+                deadline,
+                post
             })
             console.log(res)
             if(res.status === 200) {
@@ -93,12 +99,15 @@ const EditJob = () => {
                 setDuration(0)
                 setSalary(0)
                 setErrors({})
+                setDeadline('')
                 setBack(true)
                 console.log('Success')
             } else if(res.data.applicants) {
                 setErrors({ applicants: res.data.applicants })
             } else if(res.data.positions) {
                 setErrors({ positions: res.data.positions })
+            } else if(res.data.deadline) {
+                setErrors({ deadline: res.data.deadline })
             } else {
                 console.log(res.data.someError)
             }
@@ -177,6 +186,15 @@ const EditJob = () => {
                             readOnly
                         />
                     </Form.Group>
+                    <Form.Group controid='post'>
+                        <Form.Label>Date of Posting</Form.Label>
+                        <Form.Control 
+                            type='text'
+                            plaintext
+                            defaultValue={post}
+                            readOnly
+                        />
+                    </Form.Group>
                     <Form.Group controid='applicants'>
                         <Form.Label>Max number of Applicants</Form.Label>
                         <Form.Control 
@@ -238,6 +256,17 @@ const EditJob = () => {
                             defaultValue={salary}
                             readOnly
                         />
+                    </Form.Group>
+                    <Form.Group controid='deadline'>
+                        <Form.Label>Deadline for applications</Form.Label>
+                        <Form.Control 
+                            className={classnames('', {invalid: errors.deadline})}
+                            type='text'
+                            plaintext
+                            defaultValue={deadline}
+                            onChange={e => setDeadline(e.target.value)}
+                        />
+                        <span className='red-text'>{errors.deadline}</span>
                     </Form.Group>
                 </Form>
                 <div className='col s12' style={{ margin: '10px' }}>

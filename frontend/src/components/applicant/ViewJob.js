@@ -31,6 +31,7 @@ const AViewJob = () => {
     const [ajob, setAjob] = useState(null)
     const [sop, setSop] = useState('')
     const [errors, setErrors] = useState({})
+    const [reset, setReset] = useState(false)
 
     useEffect(() => {
         async function timepass() {
@@ -96,6 +97,12 @@ const AViewJob = () => {
                     </p>
                     <p>
                         <b>{`salary: `}</b> {`$ ${job.salary}`}
+                    </p>
+                    <p>
+                        <b>Date of Posting: </b> {job.post}
+                    </p>
+                    <p>
+                        <b>Deadline: </b> {job.deadline}
                     </p>
                     <button
                         style={{marginTop: '20px', marginLeft: '10px'}}
@@ -180,15 +187,15 @@ const AViewJob = () => {
 
     const printSort = () => {
         console.log('printSort')
-        if(sortSal) {
+        if(sortSal === true) {
             setJobs([...jobs.sort((a, b) => (a.salary > b.salary ? 1 : -1))])
-        } else if(!sortSal) {
+        } else if(sortSal === false) {
             setJobs([...jobs.sort((a, b) => (a.salary < b.salary ? 1 : -1))])
         }
 
-        if(sortDur) {
+        if(sortDur === true) {
             setJobs([...jobs.sort((a, b) => (a.duration > b.duration ? 1 : -1))])
-        } else if(!sortDur) {
+        } else if(sortDur === false) {
             setJobs([...jobs.sort((a, b) => (a.duration < b.duration ? 1 : -1))])
         }
     }
@@ -316,6 +323,7 @@ const AViewJob = () => {
                                             >
                                                 <MenuItem value={true}>Ascending</MenuItem>
                                                 <MenuItem value={false}>Descending</MenuItem>
+                                                <MenuItem value={null}>No Preference</MenuItem>
                                             </Select>
                                         </FormControl>
                                     </div>
@@ -332,6 +340,7 @@ const AViewJob = () => {
                                             >
                                                 <MenuItem value={true}>Ascending</MenuItem>
                                                 <MenuItem value={false}>Descending</MenuItem>
+                                                <MenuItem value={null}>No Preference</MenuItem>
                                             </Select>
                                         </FormControl>
                                     </div>
@@ -361,6 +370,16 @@ const AViewJob = () => {
                                     <label htmlFor='fuzzy'>Search</label>
                                 </div>
                             </form>
+                            <button
+                                    style={{marginTop: '20px', marginLeft: '10px'}}
+                                    variant="contained"
+                                    color="primary"
+                                    type="submit"
+                                    className="btn btn-large waves-effect waves-light hoverable blue accent-3"
+                                    onClick={() => setJobs(backup)}
+                                    >
+                                    Reset Fuzzy
+                            </button>
                         </div>
                         {nor()}
                     </div>
@@ -377,7 +396,8 @@ const AViewJob = () => {
                 myEmail: store.user.email,
                 email: ajob.email,
                 status: 'Waiting',
-                sop
+                sop,
+                hasJob: store.user.hasJob
             })
             console.log(res)
             if(res.status === 200){

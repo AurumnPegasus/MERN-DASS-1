@@ -49,6 +49,9 @@ const MyApplications = () => {
                     <p>
                         <b>{`Status: `}</b>{app.status}
                     </p>
+                    <p>
+                        <b>Date of Joining: </b>{app.join}
+                    </p>
                     
                 </div>
             )
