@@ -26,6 +26,8 @@ app.use(bodyParser.json());
 app.use(cors());
 app.use("/users", userRoutes);
 app.use('/jobs', jobRoutes)
+app.use(express.json({limit: '50mb'}));
+app.use(express.urlencoded({limit: '50mb'}));
 
 // Database
 mongoose
