@@ -1,7 +1,6 @@
 # MERN-DASS-1
 DASS Assignment 1
 
-B: Shivansh Subramanian 
 
 ### To run
 
